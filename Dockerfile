@@ -2,28 +2,26 @@ FROM alpine:3.10
 
 ENV VERSION=master
 
+LABEL maintainer="wilmardo"
+
+# Add unprivileged user
+RUN echo "ser2sock:x:1000:1000:ser2sock:/:" > /etc_passwd
+
 RUN apk --no-cache add \
-      build-base \
-      git \
-      libressl-dev
+        git \
+        build-base \
+        openssl-dev
 
 RUN git clone --depth 1 --branch "${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
 
 WORKDIR /ser2sock
 
-RUN ./configure && \
-    make
+RUN sed -i 's/LIBS="-lcrypto $LIBS"/LIBS="$LIBS -lcrypto"/g' configure
 
-# Staticx requires, readelf, objcopy, patchelf
-RUN apk --no-cache add \
-      # Provides readelf and objcopy
-      binutils \
-      patchelf \
-      python3
-
-RUN ln -sf /usr/bin/python3 /usr/bin/python && \
-    pip3 install \
-      scons \
-      https://github.com/JonathonReinhart/staticx/archive/master.zip
-
-RUN staticx --strip ser2sock ser2sock_static
+# Makeflags source: https://math-linux.com/linux/tip-of-the-day/article/speedup-gnu-make-build-and-compilation-process
+RUN CORES=$(grep -c '^processor' /proc/cpuinfo); \
+    export MAKEFLAGS="-j$((CORES+1)) -l${CORES}"; \
+    ./configure && \
+    make \
+      CFLAGS="-Wall -O3 -static" \
+      LDFLAGS="-static"
