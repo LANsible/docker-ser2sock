@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ser2sock
+  # Change if you want to deploy to somewhere other then default
+  namespace: default
+  labels:
+    app: ser2sock
+spec:
+  selector:
+    app: ser2sock
+  ports:
+    - port: 10000
+      nodePort: 310000
+  type: NodePort

@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ser2sock
+  # Change if you want to deploy to somewhere other then default
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ser2sock
+  namespace: ser2sock
+  labels:
+    app: ser2sock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ser2sock
+  template:
+    metadata:
+      labels:
+        app: ser2sock
+    spec:
+      # Setup affinity to node with the zigbee-usb label
+      # In my cluster this is the node where the serial device is plugged in :)
+      nodeSelector:
+        device: zigbee-usb
+      serviceAccountName: ser2sock
+      containers:
+        - name: ser2sock
+          image: lansible/ser2sock:master
+          imagePullPolicy: Always
+          securityContext:
+            # Needed to read the tty device on the host
+            # Related: https://github.com/kubernetes/kubernetes/issues/60748
+            privileged: true
+            # Readonly root for container for security purposes
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 10000
+          volumeMounts:
+            - name: zigbee-usb
+              mountPath: /dev/ttyACM0
+      volumes:
+        - name: zigbee-usb
+          hostPath:
+            path: /dev/serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B00194AD7EC-if00
+            type: CharDevice

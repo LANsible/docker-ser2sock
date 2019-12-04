@@ -1,0 +1,13 @@
+---
+  version: "3"
+  services:
+    ser2sock:
+      container_name: ser2sock
+      image: lansible/ser2sock:latest
+      ports:
+        - "31000:10000"
+      volumes:
+        - ./config:/config
+      devices:
+        - /dev/ttyACM0:/dev/ttyACM0
+      restart: always
