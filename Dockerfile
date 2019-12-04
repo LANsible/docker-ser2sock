@@ -42,3 +42,4 @@ COPY ser2sock.conf /config/ser2sock.conf
 USER ser2sock
 ENTRYPOINT ["/ser2sock"]
 CMD ["-f", "/config/ser2sock.conf"]
+EXPOSE 10000
