@@ -30,6 +30,9 @@ RUN CORES=$(grep -c '^processor' /proc/cpuinfo); \
 RUN apk add --no-cache upx && \
     upx --best /ser2sock/ser2sock
 
+# Test binary
+RUN upx -t /root/.nexe/*/out/Release/node
+
 FROM scratch
 
 # Copy the unprivileged user
