@@ -41,7 +41,7 @@ RUN apk add --no-cache upx && \
 FROM scratch
 
 # Add description
-LABEL description="Static compiled Ser2Sock in a scratch container"
+LABEL org.label-schema.description="Static compiled Ser2Sock in a scratch container"
 
 # Copy the unprivileged user
 COPY --from=builder /etc_passwd /etc/passwd
