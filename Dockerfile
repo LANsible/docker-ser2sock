@@ -1,3 +1,6 @@
+#######################################################################################################################
+# Build static Ser2Sock
+#######################################################################################################################
 FROM alpine:3.10 as builder
 
 ENV VERSION=v1.5.5
@@ -28,12 +31,17 @@ RUN CORES=$(grep -c '^processor' /proc/cpuinfo); \
 # Minify binaries
 # --brute does not work
 RUN apk add --no-cache upx && \
-    upx --best /ser2sock/ser2sock
+    upx --best /ser2sock/ser2sock && \
+    upx -t /mosquitto/src/mosquitto
 
-# Test binary
-RUN upx -t /root/.nexe/*/out/Release/node
 
+#######################################################################################################################
+# Final scratch image
+#######################################################################################################################
 FROM scratch
+
+# Add description
+LABEL description="Static compiled Ser2Sock in a scratch container"
 
 # Copy the unprivileged user
 COPY --from=builder /etc_passwd /etc/passwd
