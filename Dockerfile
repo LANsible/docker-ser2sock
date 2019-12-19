@@ -3,7 +3,9 @@
 #######################################################################################################################
 FROM alpine:3.10 as builder
 
-ENV VERSION=v1.5.5
+# Build master until version >1.5.5 does not build
+# https://github.com/nutechsoftware/ser2sock/pull/13
+ENV VERSION=master
 
 # Add unprivileged user
 RUN echo "ser2sock:x:1000:1000:ser2sock:/:" > /etc_passwd
