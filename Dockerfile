@@ -50,7 +50,9 @@ COPY --from=builder /etc_passwd /etc/passwd
 
 # Copy static binary
 COPY --from=builder /ser2sock/ser2sock /ser2sock
-COPY ser2sock.conf /config/ser2sock.conf
+
+# Add default configuration
+COPY examples/docker-compose/config/ser2sock.conf /config/ser2sock.conf
 
 USER ser2sock
 ENTRYPOINT ["/ser2sock"]
