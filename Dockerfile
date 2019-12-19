@@ -32,7 +32,7 @@ RUN CORES=$(grep -c '^processor' /proc/cpuinfo); \
 # --brute does not work
 RUN apk add --no-cache upx && \
     upx --best /ser2sock/ser2sock && \
-    upx -t /mosquitto/src/mosquitto
+    upx -t /ser2sock/ser2sock
 
 
 #######################################################################################################################
