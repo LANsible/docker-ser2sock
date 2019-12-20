@@ -13,7 +13,7 @@ RUN apk --no-cache add \
         build-base \
         openssl-dev
 
-RUN git clone --depth 1 --branch "${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
+RUN git clone --depth 1 --branch "v${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
 
 WORKDIR /ser2sock
 
