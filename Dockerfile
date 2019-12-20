@@ -3,9 +3,7 @@
 #######################################################################################################################
 FROM alpine:3.10 as builder
 
-# Build master until version >1.5.5 does not build
-# https://github.com/nutechsoftware/ser2sock/pull/13
-ENV VERSION=master
+ENV VERSION=1.5.5
 
 # Add unprivileged user
 RUN echo "ser2sock:x:1000:1000:ser2sock:/:" > /etc_passwd
@@ -19,7 +17,8 @@ RUN git clone --depth 1 --branch "${VERSION}" https://github.com/nutechsoftware/
 
 WORKDIR /ser2sock
 
-# Needed until https://github.com/nutechsoftware/ser2sock/pull/13 is merged
+# Needed until version >1.5.6 is released
+# https://github.com/nutechsoftware/ser2sock/pull/13
 RUN sed -i 's/LIBS="-lcrypto $LIBS"/LIBS="$LIBS -lcrypto"/g' configure
 
 # Makeflags source: https://math-linux.com/linux/tip-of-the-day/article/speedup-gnu-make-build-and-compilation-process
