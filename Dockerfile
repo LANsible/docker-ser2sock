@@ -1,6 +1,10 @@
-FROM alpine:3.10 as builder
+#######################################################################################################################
+# Build static Ser2Sock
+#######################################################################################################################
+ARG ARCHITECTURE
+FROM multiarch/alpine:${ARCHITECTURE}-v3.10 as builder
 
-ENV VERSION=v1.5.5
+ENV VERSION=1.5.5
 
 # Add unprivileged user
 RUN echo "ser2sock:x:1000:1000:ser2sock:/:" > /etc_passwd
@@ -10,11 +14,12 @@ RUN apk --no-cache add \
         build-base \
         openssl-dev
 
-RUN git clone --depth 1 --branch "${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
+RUN git clone --depth 1 --branch "v${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
 
 WORKDIR /ser2sock
 
-# Needed until https://github.com/nutechsoftware/ser2sock/pull/13 is merged
+# Needed until version >1.5.6 is released
+# https://github.com/nutechsoftware/ser2sock/pull/13
 RUN sed -i 's/LIBS="-lcrypto $LIBS"/LIBS="$LIBS -lcrypto"/g' configure
 
 # Makeflags source: https://math-linux.com/linux/tip-of-the-day/article/speedup-gnu-make-build-and-compilation-process
@@ -28,16 +33,26 @@ RUN CORES=$(grep -c '^processor' /proc/cpuinfo); \
 # Minify binaries
 # --brute does not work
 RUN apk add --no-cache upx && \
-    upx --best /ser2sock/ser2sock
+    upx --best /ser2sock/ser2sock && \
+    upx -t /ser2sock/ser2sock
 
+
+#######################################################################################################################
+# Final scratch image
+#######################################################################################################################
 FROM scratch
+
+# Add description
+LABEL org.label-schema.description="Static compiled Ser2Sock in a scratch container"
 
 # Copy the unprivileged user
 COPY --from=builder /etc_passwd /etc/passwd
 
 # Copy static binary
 COPY --from=builder /ser2sock/ser2sock /ser2sock
-COPY ser2sock.conf /config/ser2sock.conf
+
+# Add default configuration
+COPY examples/docker-compose/config/ser2sock.conf /config/ser2sock.conf
 
 USER ser2sock
 ENTRYPOINT ["/ser2sock"]
