@@ -2,11 +2,11 @@
   apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: mosquitto-config
+    name: ser2sock-config
     # Change if you want to deploy to somewhere other then default
     namespace: default
     labels:
-      app: mosquitto
+      app: ser2sock
   data:
     ser2sock.conf: |
       # ser2sock sample configuration

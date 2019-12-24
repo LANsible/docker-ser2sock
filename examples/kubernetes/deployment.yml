@@ -30,7 +30,7 @@ spec:
       serviceAccountName: ser2sock
       containers:
         - name: ser2sock
-          image: lansible/ser2sock:master
+          image: lansible/ser2sock:latest
           imagePullPolicy: Always
           securityContext:
             # Needed to read the tty device on the host
@@ -41,9 +41,14 @@ spec:
           ports:
             - containerPort: 10000
           volumeMounts:
+            - name: ser2sock-config
+              mountPath: /config
             - name: zigbee-usb
               mountPath: /dev/ttyACM0
       volumes:
+        - name: ser2sock-config
+          configMap:
+            name: ser2sock-config
         - name: zigbee-usb
           hostPath:
             path: /dev/serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B00194AD7EC-if00
