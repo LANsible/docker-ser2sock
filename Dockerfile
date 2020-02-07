@@ -4,7 +4,7 @@
 ARG ARCHITECTURE
 FROM multiarch/alpine:${ARCHITECTURE}-v3.11 as builder
 
-ENV VERSION=1.5.5
+ENV VERSION=v1.5.5
 
 # Add unprivileged user
 RUN echo "ser2sock:x:1000:1000:ser2sock:/:" > /etc_passwd
@@ -14,7 +14,7 @@ RUN apk --no-cache add \
         build-base \
         openssl-dev
 
-RUN git clone --depth 1 --branch "v${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
+RUN git clone --depth 1 --branch "${VERSION}" https://github.com/nutechsoftware/ser2sock.git /ser2sock
 
 WORKDIR /ser2sock
 
